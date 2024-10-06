@@ -1,6 +1,7 @@
 class Button {
   
-    int x, y, buttonWidth, buttonHeight;
+    float x, y;
+    int buttonWidth, buttonHeight;
     String buttonText;
     
     
@@ -10,19 +11,19 @@ class Button {
     boolean isPressed = false;
     
     // Class constructor
-    Button(String buttonText, int x, int y, int buttonWidth, int buttonHeight){
+    Button(String buttonText, float x, float y, int buttonWidth, int buttonHeight){
       
         this.buttonText = buttonText;
         this.x = x;
         this.y = y;
         this.buttonWidth = buttonWidth;
         this.buttonHeight = buttonHeight;
-
-            
+      
     }
     
+    
     void display(){
-        fill(73, 160, 120); 
+        fill(81, 111, 163); 
         noStroke();
         rect(x, y, buttonWidth, buttonHeight, 15);
          

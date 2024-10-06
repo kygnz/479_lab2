@@ -1,9 +1,13 @@
-Button submitAge;
+Button submitAge,
+      fitnessMode,
+      stressDetection,
+      meditationMode;
 String input = "";
 int userAge;
 
+
+
 void drawInputBox(){
-  
     fill(255);  // White background
     noStroke(); // No outline
     rect(width/3, height/2 - 25, 250, 50, 15);  // Rounded corners (15)
@@ -13,28 +17,14 @@ void drawInputBox(){
     textSize(20);
     textAlign(LEFT, CENTER);
     
-    //if (input.equals("") && !isInputActive){
-    //    text(inputText, width/2 - 140, height/2);
-    //} else{
-        text(input, width/2 - 140, height/2);
-    //}
-  
-  
+    text(input, width/2 - 140, height/2);
 }
 
-void drawOpeningScreen(){
-  
+
+
+void drawOpeningScreen(){ 
     fill(255);
     background(bg);
-    //stroke(226, 204, 0);
-    //line(0, y, width, y);
-  
-    //y++;
-    //  if (y > height) {
-    //    y = 0;
-    //  }
-    //}
-    //background(color(152, 201, 163));
     
     // title
     textAlign(CENTER, CENTER);
@@ -43,22 +33,73 @@ void drawOpeningScreen(){
     
     // description
     textSize(25);
-    text("Enter your age to begin", width / 2, height * 0.41);
-   
-    
-    
+    text("Enter your age to begin", width / 2, height * 0.41);   
 }
 
 
-void drawMainScreen(){
-  
+
+void drawMainScreen(){ 
     background(color(238, 240, 242));
     textAlign(CENTER, CENTER);
-    textSize(55);
-    text("Main stuff will go here", width / 2, height / 3);
- 
-        
+    textSize(35);
+    text("Fitness Monitor", width / 2, height * 0.05);
+    drawLeftPane();
+    drawMiddlePane();
+    drawRightPane();  
+    drawButtonArea();
 }
+
+
+
+void drawLeftPane(){
+    fill(216, 216, 216);
+    rect(0, height * 0.1, width * 0.25, height * 0.9);
+    fill(33, 40, 48);
+    textSize(15);
+    text("Statistics go here", width * .10, height * 0.15);
+    
+}
+
+
+void drawMiddlePane(){
+  fill(238, 240, 242);
+  rect(width * 0.25, height * 0.1, width * 0.5, height * 0.8);
+  
+  fill(33, 40, 48);
+  textSize(15);
+  text("Select a mode to get started", width * .5, height * 0.15);
+}
+
+
+
+void drawRightPane(){
+    fill(216, 216, 216);
+    rect(width * 0.75, height * 0.1, width * 0.25, height * 0.9);
+    
+    fill(33, 40, 48);
+    textSize(15);
+    text("Explanation of graph\n goes here\nFor example, the key", width * .9, height * 0.15);
+}
+
+
+
+void drawButtonArea(){
+    fill(225, 225, 225);
+    rect(width * 0.25, height * 0.9, width * 0.5, height * 0.1);
+    fill(33, 40, 48);
+    //textSize(15);
+    //text("Buttons to change the mode go here", width * .5, height * 0.95);
+    
+    fitnessMode = new Button("Fitness\nMode", width * 0.25 + 25, height * 0.92, 150, 50);
+    stressDetection = new Button("Stress\nDetection", width * 0.44, height * 0.92, 150, 50);
+    meditationMode = new Button("Meditation\nMode", width * 0.6 + 25, height * 0.92, 150, 50);
+    
+    fitnessMode.display();
+    stressDetection.display();
+    meditationMode.display();
+}
+
+
 
 
 void mousePressed() {
@@ -67,16 +108,36 @@ void mousePressed() {
         handleInput();  // Submit data when button is clicked
     }
     
+    // Check if the fitness mode button is pressed
+    if (fitnessMode != null && fitnessMode.isMouseOver()) {
+        println("Fitness mode selected");
+        appState = 2;
+    }
+    
+    // Check if stress detection mode button is pressed
+    if (stressDetection != null && stressDetection.isMouseOver()) {
+        println("Stress detection mode selected");
+        appState = 3;
+    }
+    
+    // Check if stress detection mode button is pressed
+    if (meditationMode != null && meditationMode.isMouseOver()) {
+        println("Stress detection mode selected");
+        appState = 4;
+    }
+    
     // Check if the user clicked inside the input box to activate it
     if (mouseX > width / 3 && mouseX < width / 3 + 250 && mouseY > height / 2 - 25 && mouseY < height / 2 + 25) {
-        isInputActive = true;  // Activate the input field
+        isInputActive = true;
     } else {
-        isInputActive = false;  // Deactivate if clicked outside
+        isInputActive = false;  // Deactivate if user clicked outside input box
     }
 }
 
+
+
+// Process the input after user enters age
 void handleInput() {
-    // Process the input when the submit button is clicked
     try {
         userAge = Integer.parseInt(input);  // Convert input to integer
         println("User age: " + userAge);  // Output the entered age
@@ -87,6 +148,14 @@ void handleInput() {
         println("Invalid number input");
     }
 }
+
+void handleFitnessMode(){
+  
+    println("Fitness mode selected");
+    appState = 2;
+}
+
+
 
 void keyPressed() {
     if (isInputActive) {

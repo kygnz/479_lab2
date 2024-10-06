@@ -75,6 +75,15 @@ void draw() {
     else if (appState == 1){
         drawMainScreen();
     }
+    else if (appState == 2){
+        displayFitnessMode();
+    }
+    else if(appState == 3){
+        displayStressDetection();
+    }
+    else if(appState == 4){
+        displayMeditationMode();
+    }
     
 }
 
