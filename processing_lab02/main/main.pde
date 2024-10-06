@@ -26,8 +26,8 @@ void setup() {
     //println(Serial.list());
     //myPort = new Serial(this, portName, 115200);
     //myPort.bufferUntil('\n');
-    size(1200, 720);
-    bg = loadImage("blue2.jpg");
+    size(1350, 900);
+    bg = loadImage("blue3.jpg");
     
     
     
@@ -38,7 +38,7 @@ void draw() {
   
   /*
   
-  APP LOGIC STARTS HERE
+  MAIN APP LOGIC STARTS HERE
   
   appState controls which "screen" will be displayed:
   appState = 0 will display the welcome screen, with the title and user input
