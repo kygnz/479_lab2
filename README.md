@@ -1,4 +1,4 @@
-# Heart rate and Breathing Rate Strap
+# Heart and Respiratory Rate Monitor
 
 Your goal in this lab is to develop a wearable chest
 strap that monitors the heart rate and the respiratory
