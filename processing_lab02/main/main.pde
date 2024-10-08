@@ -68,7 +68,7 @@ void draw() {
         // input box
         drawInputBox();
         isInputActive = true;
-        submitAge = new Button("submit", width / 2 + 60, height / 2 - 25, 100, 50);
+        submitAge = new Button("submit", width / 2 + 60, height / 2 - 25, 100, 50, color(210, 198, 198));
         submitAge.display();
         
     }

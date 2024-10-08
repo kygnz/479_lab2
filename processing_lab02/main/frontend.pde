@@ -90,9 +90,9 @@ void drawButtonArea(){
     //textSize(15);
     //text("Buttons to change the mode go here", width * .5, height * 0.95);
     
-    fitnessMode = new Button("Fitness\nMode", width * 0.25 + 25, height * 0.92, 150, 50);
-    stressDetection = new Button("Stress\nDetection", width * 0.44, height * 0.92, 150, 50);
-    meditationMode = new Button("Meditation\nMode", width * 0.6 + 25, height * 0.92, 150, 50);
+    fitnessMode = new Button("Fitness\nMode", width * 0.25 + 25, height * 0.92, 150, 50, color(81, 111, 163));
+    stressDetection = new Button("Stress\nDetection", width * 0.44, height * 0.92, 150, 50, color(81, 111, 163));
+    meditationMode = new Button("Meditation\nMode", width * 0.6 + 25, height * 0.92, 150, 50, color(81, 111, 163));
     
     fitnessMode.display();
     stressDetection.display();
@@ -112,18 +112,37 @@ void mousePressed() {
     if (fitnessMode != null && fitnessMode.isMouseOver()) {
         println("Fitness mode selected");
         appState = 2;
+        fitnessMode.setColor(color(133, 154, 191));
+        stressDetection.setColor(color(81, 111, 163));
+        meditationMode.setColor(color(81, 111, 163));
+        fitnessMode.display();
+        stressDetection.display();
+        meditationMode.display();
     }
     
     // Check if stress detection mode button is pressed
     if (stressDetection != null && stressDetection.isMouseOver()) {
         println("Stress detection mode selected");
         appState = 3;
+        fitnessMode.setColor(color(81, 111, 163));
+        stressDetection.setColor(color(133, 154, 191));
+        meditationMode.setColor(color(81, 111, 163));
+        fitnessMode.display();
+        stressDetection.display();
+        meditationMode.display();
+        
     }
     
     // Check if stress detection mode button is pressed
     if (meditationMode != null && meditationMode.isMouseOver()) {
         println("Stress detection mode selected");
         appState = 4;
+        fitnessMode.setColor(color(81, 111, 163));
+        stressDetection.setColor(color(81, 111, 163));
+        meditationMode.setColor(color(133, 154, 191));
+        fitnessMode.display();
+        stressDetection.display();
+        meditationMode.display();
     }
     
     // Check if the user clicked inside the input box to activate it

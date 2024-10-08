@@ -9,21 +9,23 @@ class Button {
     //color textColor = ;
     int cornerRadius;
     boolean isPressed = false;
+    color buttonColor;
     
     // Class constructor
-    Button(String buttonText, float x, float y, int buttonWidth, int buttonHeight){
+    Button(String buttonText, float x, float y, int buttonWidth, int buttonHeight, color buttonColor){
       
         this.buttonText = buttonText;
         this.x = x;
         this.y = y;
         this.buttonWidth = buttonWidth;
         this.buttonHeight = buttonHeight;
+        this.buttonColor = buttonColor;
       
     }
     
-    
+    // 81, 111, 163
     void display(){
-        fill(81, 111, 163); 
+        fill(buttonColor); 
         noStroke();
         rect(x, y, buttonWidth, buttonHeight, 15);
          
@@ -37,6 +39,10 @@ class Button {
     
     boolean isMouseOver() {
         return mouseX > x && mouseX < x + buttonWidth && mouseY > y && mouseY < y + buttonHeight;
+    }
+    
+    void setColor(color buttonColor){
+      this.buttonColor = buttonColor;
     }
 
     //void isMousePressed() {
