@@ -1,9 +1,11 @@
+float elapsedTime;
+
 Button submitAge,
       fitnessMode,
       stressDetection,
       meditationMode;
 String input = "";
-int userAge;
+int userAge = 0;
 
 
 
@@ -47,6 +49,7 @@ void drawMainScreen(){
     drawMiddlePane();
     drawRightPane();  
     drawButtonArea();
+    
 }
 
 

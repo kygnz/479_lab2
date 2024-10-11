@@ -5,6 +5,8 @@ void displayFitnessMode(){
     fill(33, 40, 48);
     textSize(15);
     text("Fitness Mode Graphs", width * .5, height * 0.15);
+    drawHRGraph();
+    
 }
 
 void displayStressDetection(){
@@ -23,4 +25,17 @@ void displayMeditationMode(){
     fill(33, 40, 48);
     textSize(15);
     text("Meditation display", width * .5, height * 0.15);
+}
+
+void displayHRGraph(){
+    //fill(0);
+    //text("Heart Rate", 10, 60);
+    //stroke(255, 0, 0);
+    //noFill();
+    //beginShape();
+    //for (int i = 0; i < 220; i++) {
+    //  float y = map(heartBuffer.get(i), 0, 1023, height, 100);
+    //  vertex(i, y);
+    //}
+    //endShape();
 }
