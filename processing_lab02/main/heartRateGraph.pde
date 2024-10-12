@@ -20,7 +20,7 @@ void graphSetup(){
     
     //heartRateChart.setLineVisible(true);
     heartRateChart.setLineColour(color(62, 98, 89));
-    heartRateChart.setLineWidth(3);
+    heartRateChart.setLineWidth(2);
 
 }
 
@@ -34,13 +34,13 @@ void drawHRGraph(){
     
       // Define the position and size of the chart to match the middle pane
       float chartX = width * 0.25 + 25;
-      float chartY = height * 0.1 + 10;
+      float chartY = height * 0.1 + 20;
       float chartWidth = width * 0.5 - 50;
-      float chartHeight = height * 0.3;
+      float chartHeight = height * 0.2;
     
       // Draw the chart background
-      fill(238, 240, 242);
-      rect(chartX, chartY, chartWidth, chartHeight);
+      //fill(238, 240, 242);
+      //rect(chartX, chartY, chartWidth, chartHeight);
       
       // Draw axes
       stroke(33, 40, 48);
@@ -132,7 +132,7 @@ void drawHRGraph(){
 void graphSerialEvent(float heartrate, float timePassed){
     //println("you reached the graphing part!\n");
      heartRateY.append(heartrate);
-    timeX.append(timePassed);
+     timeX.append(timePassed);
     
     // Ensure the graph only displays the most recent 100 data points
     if (timeX.size() > 100 && heartRateY.size() > 100) {

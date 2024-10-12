@@ -16,6 +16,7 @@ import org.gicentre.utils.io.*;
 
 //Serial myPort;
 PImage bg;
+PImage meditatebg;
 int y;
 int appState = 0;
 boolean isInputActive = false;
@@ -45,13 +46,16 @@ void setup() {
     println(Serial.list());
     myPort = new Serial(this, portName, 115200);
     myPort.bufferUntil('\n');
-    size(1350, 900);
-    bg = loadImage("blue3.jpg");
+    size(1350, 1000);
+    bg = loadImage("blue.jpg");
+    meditatebg = loadImage("meditate.jpg");
     
     // Start collecting the baseline
     baselineStartTime = millis();
     
     graphSetup();
+    respiratoryGraphSetup();
+    inhalationGraphSetup();
     
     
     

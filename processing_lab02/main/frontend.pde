@@ -56,8 +56,12 @@ void drawMainScreen(){
 
 void drawLeftPane(){
     fill(216, 216, 216);
+    noStroke(); // No outline
+    //rect(0, height * 0.1, width * 0.25, height * 0.9);
+    //image(bg, 0, height * 0.05, width * 0.25, height * 0.9);
+    //noFill();
+    //fill(33, 40, 48);
     rect(0, height * 0.1, width * 0.25, height * 0.9);
-    fill(33, 40, 48);
     textSize(15);
     text("Statistics go here", width * .10, height * 0.15);
     
@@ -66,6 +70,7 @@ void drawLeftPane(){
 
 void drawMiddlePane(){
   fill(238, 240, 242);
+  noStroke(); // No outline
   rect(width * 0.25, height * 0.1, width * 0.5, height * 0.8);
   
   fill(33, 40, 48);
@@ -77,7 +82,8 @@ void drawMiddlePane(){
 
 void drawRightPane(){
     fill(216, 216, 216);
-    rect(width * 0.75, height * 0.1, width * 0.25, height * 0.9);
+    noStroke(); // No outline
+    rect(width * 0.75, height * .1, width * 0.25, height * .9);
     
     fill(33, 40, 48);
     textSize(15);
