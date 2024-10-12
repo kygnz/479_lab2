@@ -35,12 +35,21 @@ void displayMeditationMode(){
     
     image(meditatebg, width * 0.25, height * 0.1, width * 0.5, height * 0.8);
     noFill();
-    stroke(0);
+    noStroke(); // No outline
     rect(width * 0.25, height * 0.1, width * 0.5, height * 0.8);
     
     fill(240);
     textSize(35);
     text("Let's Meditate!", width * .5, height * 0.35);
+    if (!baselineCollected) {
+      textSize(15);
+      text("Loading... ", width / 2 - 60, height / 2);
+      text((15 - (millis() - baselineStartTime) / 1000) + " seconds left", width / 2 + 50, height / 2);
+    } else {
+        text("Now, Breathe", width * .5, height * 0.55);
+        // BEGIN DETECTING BREATHING PATTERNS
+        // MAKE AN ICON TO LET USER KNOW TO BREATHE... add a visual stopwatch/timer?
+    }
 }
 
 void displayHRGraph(){
