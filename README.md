@@ -5,9 +5,9 @@ strap that monitors the heart rate and the respiratory
 rate. 
 
 ## Section 0: Display the graphs
-- [ ] heart and respiratory rate
-- [ ] inhalation period
-- [ ] exhalation period
+- [ ] heart rate
+- [ ] respiratory rate
+- [ ] inhale/exhale period
 
 ## Section 1: Fitness Mode
 - [ ] interface should always collect 30-sec of baseline from the user, baseline data would display the resting heart rate and the resting respiratory rate
