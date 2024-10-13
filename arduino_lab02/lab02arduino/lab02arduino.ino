@@ -23,49 +23,39 @@ local pub, and you've found our code helpful, please buy us a round!
 
 Distributed as-is; no warranty is given.
 ******************************************************************************/
+int ecgValue = 0;
+int fsrValue = 0;
+
+
 
 void setup() {
   // initialize the serial communication:
   Serial.begin(115200);
-    // Serial.println("lol");
   pinMode(10, INPUT); // Setup for leads off detection LO +
   pinMode(11, INPUT); // Setup for leads off detection LO -
-    // Serial.println("lol");
 
 }
 
 void loop() {
-  //  Serial.println("lol");
-        // Serial.println("digitalRead(10): ");
-
-        // Serial.println(digitalRead(10));
-          // Serial.println("digitalRead(11): ");
-          // Serial.println(digitalRead(11));
-
-      //          Serial.println("analogRead(A0): ");
-
-      // Serial.println(analogRead(A0));
-      //  Serial.println("analogRead(A1): ");
-
-      //  Serial.println(analogRead(A1));
 
   if((digitalRead(10) == 1)||(digitalRead(11) == 1)){
     Serial.println('!');
   }
   else{
-    // send the value of analog input 0:
-      // Serial.println("analogRead(A0): ");
-if(analogRead(A0)!=0){
+      ecgValue = analogRead(A0);
+      fsrValue = analogRead(A1);
+      if(ecgValue != 0){
 
-   Serial.println(analogRead(A0));
-        // Serial.println(analogRead(A1));// the flex sensors
+          Serial.print("ECG: ");
+          Serial.println(ecgValue);
+          Serial.print("FSR: ");
+          Serial.println(fsrValue);
 
-}
-      // Serial.println(analogRead(A0));// heart rate
-      //  Serial.println("analogRead(A1): ");
-      //  Serial.println(analogRead(A1));// the flex sensorss
-      //  Serial.println(analogRead(A1));// the flex sensors
+              // Serial.println(analogRead(A1));// the flex sensors
+
+      }
+      
   }
   //Wait for a bit to keep serial data from saturating
-  delay(3);
+  delay(100);
 }

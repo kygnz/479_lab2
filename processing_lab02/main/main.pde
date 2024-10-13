@@ -25,11 +25,33 @@ boolean isInputActive = false;
 FloatList ecgReadings = new FloatList(); // Store ECG values for smoothing
 int numReadings = 10; // Number of readings to average for smoothing
 
+// FSR variables:
+FloatList fsrBuffer = new FloatList();
+int bufferSize = 50;
+
+// For breath detection
+float previousValue = 0;
+boolean isInhale = false;
+boolean potentialPeak = false;
+boolean potentialValley = false;
+int breathCount = 0;
+int minBreathInterval = 2000; // Minimum interval between breaths in milliseconds
+float previousFSRValue = 0;
+int lastBreathTime = 0;
+float minPeakAmplitude = 20; // Minimum change to consider a peak (adjust as needed)
+FloatList fsrReadings = new FloatList();
+float restingRespRate = 0;
+int windowSize = 60000;
+FloatList breathTimes = new FloatList();
+
+
+
 FloatList baselineData = new FloatList();
 boolean baselineCollected = false;
-int baselineDuration = 15000; // 15 seconds in milliseconds
+int baselineDuration = 30000; // 30 seconds in milliseconds
 float baselineAverage = 0;
 float threshold = 0;
+float fsrThreshold = 0;
 boolean belowThreshold = true;
 float baselineStartTime;
 float startTime;
@@ -55,56 +77,37 @@ void setup() {
     
     graphSetup();
     respiratoryGraphSetup();
-    inhalationGraphSetup();
-    
-    
+    inhalationGraphSetup();  
     
 }
 
 
 void draw() {
   
-  /*
-  
-  -------- MAIN APP LOGIC STARTS HERE ----------------------------------
-  
-  appState controls which "screen" will be displayed:
-  appState = 0 will display the welcome screen, with the title and user input
-  
-  appState = 1 will display the default fitness mode
-  appState = 2 will display stress detection
-  appState = 3 will display meditation
-  
-  after user input is taken, the app will open automatically with fitness mode as default. 
-  there will be three buttons on the left pane for the three different modes (fitness will 
-   already be pressed since it is open)
-   
-   the middle pane will display the different graphs/functionality related to that particular mode
-   
-   the right pane will display statistics/key for the graphs, etc.
-   
-  */
-  
-  
-  
+    // COLLECTING 30 SECOND BASELINE DATA
     if (!baselineCollected) {
-        float timeLeft = 15 - (millis() - baselineStartTime) / 1000;
+        float timeLeft = 10 - (millis() - baselineStartTime) / 1000.0;
         text("Collecting baseline... " + nf(timeLeft, 0, 2) + " seconds left", width / 2, height / 2);
 
-        // If 15 seconds have passed, calculate the threshold
-        if (millis() - baselineStartTime >= 15000) {
+        // If 30 seconds have passed, calculate the threshold
+        if (millis() - baselineStartTime >= 10000) {
             calculateThreshold();
             baselineCollected = true;
-            println("Baseline collected. Threshold set to: " + threshold);
+            restingRespRate = calculateRestingRespRate();
+            breathCount = 0; // reset breath count
+            //restingRespRate = getRestingRespRate();
+            println("Baseline collected. Resting Respiratory Rate: " + restingRespRate + " breaths/min");
+            println("Baseline collected. HR Threshold set to: " + threshold);
         }
     } else {
         startTime = millis();
+        fill(0);
+        text("Resting Respiratory Rate: " + nf(restingRespRate, 0, 2) + " breaths/min", width / 2, height / 2 + 50);
         text("Current Heart Rate: " + nf(currentHeartRate, 0, 2) + " BPM", width / 2, height / 2);
     }
     
     
-    
-    
+    // SCREEN DISPLAY LOGIC
     if (appState == 0){
         drawOpeningScreen();
         // input box
@@ -127,16 +130,9 @@ void draw() {
         displayMeditationMode();
     }
     
-    //// Display the current heart rate or baseline status
-    //fill(0);
-    //textSize(25);
-    //if (!baselineCollected) {
-    //  text("Collecting baseline... " + (15 - (millis() - baselineStartTime) / 1000) + " seconds left", width / 2, height / 2);
-    //} else {
-    //  text("Current Heart Rate: " + nf(currentHeartRate, 0, 2) + " BPM", width / 2, height / 2);
-    //}
-    
 }
+
+
 
 
 void serialEvent(Serial myPort) {
@@ -148,32 +144,40 @@ void serialEvent(Serial myPort) {
             if (inputString.equals("!")) {
                 println("!\n");
             } 
-            else {
-              
-                try {
-                      Float ecgValue = Float.parseFloat(inputString);
-                      float smoothedValue = smoothECG(ecgValue);
-                      if (!baselineCollected) {
-                          baselineData.append(smoothedValue); // Collect baseline data
-                      } else {
-                          processECG(smoothedValue); // Process smoothed ECG values for peak detection
-                      }
-                      //if(baselineCollected){
-                          //println(inputString + "\n");
-                      //}
-                } catch (NumberFormatException e) {
-                    println("Error parsing value: " + inputString);
+            // ECG DATA PROCESSING
+            else if (inputString.startsWith("ECG: ")){
+                float ecgValue = float(trim(inputString.substring(5)));
+                float smoothedValue = smoothECG(ecgValue);
+                if (!baselineCollected) {
+                    baselineData.append(smoothedValue); // Collect baseline data
+                } else {
+                    processECG(smoothedValue); // Process smoothed ECG values for peak detection
                 }
             }
-            
-            // Display the current heart rate
-            //fill(255);
-            //textSize(15);
-            //text("Current Heart Rate: " + nf(currentHeartRate, 0, 2) + " BPM", 150, height / 2);
-            
+            // FSR DATA PROCESSING
+            else if (inputString.startsWith("FSR: ")){
+                float fsrValue = float(trim(inputString.substring(5)));
+                fsrBuffer.append(fsrValue);
+                // Keep the buffer size manageable
+                if (fsrBuffer.size() > bufferSize) {
+                    fsrBuffer.remove(0);
+                }
+                float smoothedValue = noiseReduceFSR();
+                
+                if (!baselineCollected) {
+                    fsrReadings.append(smoothedValue);
+                    detectBreath(smoothedValue);
+                } else {
+                    // After baseline collection, continue processing
+                    processFSR(smoothedValue);
+                    print("FSR: ");
+                    println(fsrValue);
+                } 
+            }  
         }
     }
 }
+
 
 
 
@@ -202,27 +206,6 @@ void processECG(float smoothedValue) {
     }
 }
 
-
-//boolean isPeak(float ecgValue) {
-//  // Simple peak detection algorithm:
-//  // Consider a peak if the current value is greater than a threshold and its neighbors
-//  if (ecgData.size() < 5) return false; // Ensure enough data for peak detection
-
-//  int lastIndex = ecgData.size() - 1;
-//  //float prevValue = ecgData.get(lastIndex - 1);
-//  //float nextValue = ecgValue; // The current value is considered the next value in this context
-//  float currentValue = ecgData.get(lastIndex);
-
-//  // Compare the current value against its neighbors to determine if it's a peak
-//  float maxNeighbor = max(ecgData.get(lastIndex - 2), ecgData.get(lastIndex - 1), ecgValue);
-//  float minNeighbor = min(ecgData.get(lastIndex - 2), ecgData.get(lastIndex - 1), ecgValue);
-
-//  return currentValue > threshold && currentValue > maxNeighbor && minNeighbor < threshold;
-//  //return currentValue > threshold && prevValue < currentValue && nextValue < currentValue;
-//}
-
-
-
 void calculateThreshold() {
     // Calculate the mean of the collected baseline data
     float sum = 0;
@@ -236,63 +219,6 @@ void calculateThreshold() {
 }
 
 
-
-//void calculateBPM() {
-//    int beat_new = millis();  // Record the current time
-//    int diff = beat_new - beat_old;  // Calculate the time difference between beats
-
-//    if (diff > 300) {
-//        float currentBPM = 60000.0 / diff;  // Calculate BPM
-//        beats[beatIndex] = currentBPM;  // Store the BPM value in the array
-//        //float total = 0.0;
-//        //for (int i = 0; i < 500; i++) {
-//        //    total += beats[i];
-//        //}
-//        //currentHeartRate = total / 500.0;  // Calculate the average BPM
-//        //beat_old = beat_new;  // Update the time of the last detected beat
-//        //beatIndex = (beatIndex + 1) % 500;  // Cycle through the array
-
-//        //// Call graphSerialEvent with the heart rate and time
-//        //println("Graphing...\n");
-//        //graphSerialEvent(currentHeartRate, beat_new);
-//        //println("Heart rate: " + currentHeartRate + " BPM");
-//        beatIndex = (beatIndex + 1) % 500;
-
-//        // Update the valid beat count if not yet at the maximum
-//        if (validBeatsCount < 500) {
-//            validBeatsCount++;
-//        }
-
-// println("Graphing...\n");
-//        // Calculate the current heart rate as the average of recent values
-//        float total = 0.0;
-//        for (int i = 0; i < validBeatsCount; i++) {
-//            total += beats[i];
-//        }
-//        currentHeartRate = total / validBeatsCount;
-
-//        beat_old = beat_new;
-
-//        // Call graphSerialEvent with the heart rate and time
-       
-//        graphSerialEvent(currentHeartRate, beat_new);
-//        println("Heart rate: " + currentHeartRate + " BPM");
-//    }
-//}
-
-
-
-//void calculateBaselineAverage() {
-//    if (baselineBPMs.size() > 0) {
-//        float total = 0.0;
-//        for (int i = 0; i < baselineBPMs.size(); i++) {
-//            total += baselineBPMs.get(i);
-//        }
-//        currentHeartRate = total / baselineBPMs.size();  // Calculate the average BPM
-//    } else {
-//        currentHeartRate = 0;  // Default to 0 if no valid BPMs were collected
-//    }
-//}
 
 
 // averages the last few readings to reduce noise
@@ -310,4 +236,86 @@ float smoothECG(float ecgValue) {
         total += value;
     }
     return total / ecgReadings.size();
+}
+
+
+
+
+float noiseReduceFSR(){
+    int numSamples = min(fsrBuffer.size(), 10); // Use the last 10 samples
+    float sum = 0;
+    for (int i = fsrBuffer.size() - numSamples; i < fsrBuffer.size(); i++) {
+        sum += fsrBuffer.get(i);
+    }
+    return sum / numSamples;
+}
+
+
+
+
+void detectBreath(float currentValue) {
+    int currentTime = millis();
+    float delta = currentValue - previousValue;
+    
+    if (delta > minPeakAmplitude && !potentialPeak) {
+        // Potential inhale (peak)
+        potentialPeak = true;
+        potentialValley = false;
+    } else if (delta < -minPeakAmplitude && potentialPeak) {
+        // Potential exhale (valley)
+        potentialValley = true;
+        potentialPeak = false;
+    }
+    
+    // Check if a full breath cycle has occurred
+    if (potentialValley && (currentTime - lastBreathTime) > minBreathInterval) {
+        breathCount++;
+        lastBreathTime = currentTime;
+        potentialValley = false; // Reset for the next cycle
+    }
+    
+    previousValue = currentValue;
+}
+
+
+
+float calculateRestingRespRate() {
+    float durationInMinutes = baselineDuration / 60000.0; // Convert milliseconds to minutes
+    return breathCount / durationInMinutes; // Breaths per minute
+}
+
+
+
+void processFSR(float fsrValue) {
+    int currentTime = millis();
+
+    // Apply the same breath detection logic used during baseline
+    float delta = fsrValue - previousFSRValue;
+    
+    if (delta > minPeakAmplitude && !isInhale) {
+        // Detect inhale (peak)
+        isInhale = true;
+    } else if (delta < -minPeakAmplitude && isInhale) {
+        // Detect exhale (valley) and check if enough time has passed since last breath
+        if (currentTime - lastBreathTime > minBreathInterval) {
+            // Valid breath detected, store the time of the breath
+            breathTimes.append(currentTime);
+            lastBreathTime = currentTime;
+            isInhale = false; // Reset for the next cycle
+            
+            // Remove old breath times that are outside of the window size (1 minute)
+            while (breathTimes.size() > 0 && breathTimes.get(0) < currentTime - windowSize) {
+                breathTimes.remove(0);
+            }
+            
+            // Calculate respiratory rate based on breaths in the last minute
+            float respiratoryRate = breathTimes.size() * (60000.0 / windowSize); // Breaths per minute
+
+            // Send the respiratory rate and time to the graph function
+            //println("Time: " + currentTime + ", Respiratory Rate: " + respiratoryRate);
+            respiratorySerialEvent(respiratoryRate, currentTime / 1000.0); // time in seconds
+        }
+    }
+    
+    previousFSRValue = fsrValue; // Store the current FSR value for the next cycle
 }
