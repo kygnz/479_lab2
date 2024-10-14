@@ -1,13 +1,14 @@
 //TODO: 
-// - meditation mode
+//- finish meditation mode
 //- accurate HR values
-//- change colors on HR graph
-//- calm/stress detection
+//- change line colors on HR graph
+//- stress detection
 //- add labels to graphs
 //- display:
 //    - resting HR
 //    - current heart rate
-//    - guide to graph colors
+//    - graph color guide
+// innovative application for device
     
 
 class Button {
