@@ -62,7 +62,7 @@ boolean showAlert = false;
 // HR VARIABLES
 FloatList baselineData = new FloatList();
 boolean baselineCollected = false;
-int baselineDuration = 30000; // 30 seconds in milliseconds
+int baselineDuration = 5000; // 30 seconds in milliseconds
 float baselineAverage = 0;
 float threshold = 0;
 float fsrThreshold = 0;
@@ -72,6 +72,8 @@ float startTime;
 int beat_old = 0;
 float currentHeartRate = 0;
 
+int bpmstartTime,bpmtimePassed=0;
+
 
 
 Serial myPort;
@@ -79,7 +81,7 @@ float a0;
 
 void setup() {
 
-    String portName = Serial.list()[0]; // chnage to [0]
+    String portName = Serial.list()[4]; // chnage to [0]
     println(Serial.list());
     myPort = new Serial(this, portName, 115200);
     myPort.bufferUntil('\n');
@@ -202,10 +204,24 @@ void serialEvent(Serial myPort) {
                 } else {
                     // After baseline collection, continue processing
                     processFSR(smoothedValue);
-                    print("FSR: ");
-                    println(fsrValue);
+                    //print("FSR: ");
+                    //println(fsrValue);
                 } 
-            }  
+            }  // for bpm
+             else if (inputString.startsWith("BPM: ")){
+                bpmtimePassed = int(((millis() - bpmstartTime) / 1000.0)); 
+                float bpmValue = float(trim(inputString.substring(5)));
+                  print("BPM: ");
+                    println(bpmValue);
+                    if(bpmValue<120 && bpmValue>65 ){
+                    
+                graphSerialEvent(bpmValue, bpmtimePassed);
+                    }
+
+             
+                
+                
+            }
         }
     }
 }
@@ -225,7 +241,7 @@ void processECG(float smoothedValue) {
             beat_old = beat_new; // Update the last beat time
 
             // Call graphSerialEvent with heart rate and time for graphing
-            graphSerialEvent(currentHeartRate, beat_new);
+            //graphSerialEvent(currentHeartRate, beat_new);
             println("Heart rate: " + currentHeartRate + " BPM");
         }
 

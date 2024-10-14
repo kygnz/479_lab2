@@ -26,9 +26,25 @@ Distributed as-is; no warranty is given.
 int ecgValue = 0;
 int fsrValue = 0;
 
+const unsigned long duration = 5000; // 5-second window for better accuracy
+unsigned long startTime;
 
+
+unsigned long lastPeakTime = 0;
+int peakCount = 0;
+int previousValue = 0;
+bool inPeak = false;
+
+// Smoothing parameters
+const int SMOOTHING_WINDOW = 10;
+int values[SMOOTHING_WINDOW] = {0};
+int smoothingIndex = 0;
+int totalValue = 0;
+int smoothedValue = 0;
 
 void setup() {
+      startTime = millis();
+
   // initialize the serial communication:
   Serial.begin(115200);
   pinMode(10, INPUT); // Setup for leads off detection LO +
@@ -37,6 +53,7 @@ void setup() {
 }
 
 void loop() {
+    unsigned long currentTime = millis();
 
   if((digitalRead(10) == 1)||(digitalRead(11) == 1)){
     Serial.println('!');
@@ -45,6 +62,50 @@ void loop() {
       ecgValue = analogRead(A0);
       fsrValue = analogRead(A1);
       if(ecgValue != 0){
+              unsigned long currentTime = millis();
+
+        if((millis() - startTime < duration)){
+                                                unsigned long currentTime = millis();
+
+                //  Serial.println((millis() - startTime < duration));
+
+      // Smoothing: Implementing a simple moving average filter
+      totalValue = totalValue - values[smoothingIndex]; 
+      values[smoothingIndex] = ecgValue; 
+      totalValue = totalValue + values[smoothingIndex];
+      smoothingIndex = (smoothingIndex + 1) % SMOOTHING_WINDOW;
+      smoothedValue = totalValue / SMOOTHING_WINDOW;
+
+      // Peak detection with smoothed values
+      if (!inPeak && smoothedValue > previousValue && smoothedValue > 512) {
+        if (currentTime - lastPeakTime > 500) { // 500ms refractory period
+          peakCount++;
+          lastPeakTime = currentTime;
+          inPeak = true;
+        }
+      } else if (smoothedValue < previousValue) {
+        inPeak = false;
+      }
+
+      previousValue = smoothedValue; // Update previous smoothed value
+
+        }
+        else{
+                                    //  Serial.println((millis() - startTime < duration));
+
+          startTime=millis();
+            // startTime = millis();
+
+                          //  Serial.println((millis() - startTime < duration));
+                             float bpm = (float)peakCount * (60.0 / (duration / 1000.0));
+                             Serial.print("BPM: ");
+                               Serial.println(bpm);
+                                 peakCount = 0;
+  lastPeakTime = 0;
+
+
+
+        }
 
           Serial.print("ECG: ");
           Serial.println(ecgValue);

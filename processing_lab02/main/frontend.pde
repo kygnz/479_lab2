@@ -8,7 +8,16 @@ String input = "";
 int userAge = 0;
 
 
-
+// frontend
+float leftPaneX,
+      middlePaneX,
+      rightPaneX,
+      leftPaneWidth,
+      middlePaneWidth,
+      rightPaneWidth,
+      paneHeight;
+      
+      
 void drawInputBox(){
     fill(255);  // White background
     noStroke(); // No outline
@@ -45,6 +54,22 @@ void drawMainScreen(){
     textAlign(CENTER, CENTER);
     textSize(35);
     text("Fitness Monitor", width / 2, height * 0.05);
+    
+    
+        // ORGANIZING MIDDLE SECTION  
+    
+        // 25% of screen are right and left panes, 50% is middle
+          leftPaneWidth = width * 0.25;
+          middlePaneWidth = width * 0.5;
+          rightPaneWidth = width * 0.25;
+          paneHeight = height * 0.8;
+        
+        // starting x coordinate of each pane
+          leftPaneX = 0;
+          middlePaneX = leftPaneWidth; 
+          rightPaneX = leftPaneWidth + middlePaneWidth;
+    
+    
     drawLeftPane();
     drawMiddlePane();
     drawRightPane();  
@@ -93,7 +118,7 @@ void drawRightPane(){
     
     fill(33, 40, 48);
     textSize(15);
-    text("Explanation of graph\n goes here\nFor example, the key", width * .9, height * 0.15);
+    //text("Explanation of graph\n goes here\nFor example, the key", width * .9, height * 0.15);
 }
 
 

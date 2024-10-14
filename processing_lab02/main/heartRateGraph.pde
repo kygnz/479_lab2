@@ -24,6 +24,44 @@ void graphSetup(){
 
 }
 
+// Function to display the total time and time in each cardio zone
+void displayTimeInfo() {
+  // Define emojis for each zone
+    String veryLightEmoji = "🌫";  // Very Light (Grey)
+    String lightEmoji = "💧";        // Light (Blue)
+    String moderateEmoji = "🏃‍";   // Moderate (Green)
+    String hardEmoji = "🔥";         // Hard (Orange)
+    String peakEmoji = "⚡";         // Maximum (Red)
+
+    // Format time as minutes and seconds
+    String totalTimeStr = "Total Time Active";
+    String lightTimeStr = veryLightEmoji + " Very Light Zone (Grey)" ;
+    String fatBurnTimeStr = lightEmoji + " Light Zone (Blue)";
+    String moderateTimeStr = moderateEmoji + " Moderate Zone (Green)" ;
+    String hardTimeStr = hardEmoji + " Hard Zone (Orange)" ;
+    String peakTimeStr = peakEmoji + " Maximum Zone (Red)";
+    
+    // Draw the time information on the screen
+    pushMatrix();
+    textFont(createFont("Tahoma", 16));
+    fill(0); // Black text
+     // RIGHT PANE DATA
+    textAlign(LEFT, TOP);
+    text("Exercise zone:", rightPaneX+5, paneHeight  * 0.15);
+    fill(169, 169, 169);
+    text(lightTimeStr, rightPaneX +5, paneHeight * 0.20);
+    fill(0, 191, 255);  // Light (Blue)
+    text(fatBurnTimeStr, rightPaneX+5, paneHeight  * 0.25);
+    fill(34, 139, 34);  // Moderate (Green)
+    text(moderateTimeStr, rightPaneX+5, paneHeight  * 0.30);
+    fill(255, 165, 0);  // Hard (Orange)
+    text(hardTimeStr, rightPaneX+5, paneHeight  * 0.35);
+    fill(255, 0, 0);  // Maximum (Red)
+    text(peakTimeStr, rightPaneX+5, paneHeight* 0.40);
+    
+    popMatrix();
+    
+}
 
 void drawHRGraph(){
     pushMatrix();
@@ -126,6 +164,7 @@ void drawHRGraph(){
         //line(x1, y1, x2, y2);  // Draw line between points
     
     popMatrix();
+        displayTimeInfo();
   
 }
 
