@@ -38,8 +38,8 @@ void drawRespGraph(){
     
       // Draw the chart background
       // Temporary fill to visualize the chart area
-      fill(200, 200, 255, 150); // Light blue color with some transparency
-      stroke(33, 40, 48); // Optional border stroke
+      fill(172, 210, 237, 150); // Light blue color with some transparency
+      noStroke(); // Optional border stroke
       rect(chartX, chartY, chartWidth, chartHeight); // Draw the rectangle to cover the chart area
       //fill(238, 240, 242);
       //stroke(33, 40, 48);

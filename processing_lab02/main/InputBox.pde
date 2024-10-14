@@ -1,3 +1,15 @@
+//TODO: 
+// - meditation mode
+//- accurate HR values
+//- change colors on HR graph
+//- calm/stress detection
+//- add labels to graphs
+//- display:
+//    - resting HR
+//    - current heart rate
+//    - guide to graph colors
+    
+
 class Button {
   
     float x, y;

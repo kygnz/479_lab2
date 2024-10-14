@@ -11,7 +11,7 @@ void displayFitnessMode(){
     if (!baselineCollected) {
       fill(100);
       text("Collecting baseline... ", width / 2 - 50, height / 2);
-      text((15 - (millis() - baselineStartTime) / 1000) + " seconds left", width / 2 + 100, height / 2);
+      text((30 - (millis() - baselineStartTime) / 1000) + " seconds left", width / 2 + 100, height / 2);
     } else {
         drawHRGraph();
         drawRespGraph();
@@ -27,10 +27,19 @@ void displayStressDetection(){
     
     fill(33, 40, 48);
     textSize(15);
-    text("Stress detection display", width * .5, height * 0.15);
+    text("Stress Detection Mode", width * .5, height * 0.15);
+    
+    if (!baselineCollected) {
+      fill(100);
+      text("Collecting baseline... ", width / 2 - 50, height / 2);
+      text((30 - (millis() - baselineStartTime) / 1000) + " seconds left", width / 2 + 100, height / 2);
+    } else {
+      drawHRGraph();
+    }
 }
 
 void displayMeditationMode(){
+    inMeditationMode  = true;
     fill(238, 240, 242);
     
     image(meditatebg, width * 0.25, height * 0.1, width * 0.5, height * 0.8);
@@ -40,27 +49,58 @@ void displayMeditationMode(){
     
     fill(240);
     textSize(35);
-    text("Let's Meditate!", width * .5, height * 0.35);
+    text("Meditation", width * .5, height * 0.15);
     if (!baselineCollected) {
       textSize(15);
       text("Loading... ", width / 2 - 60, height / 2);
-      text((15 - (millis() - baselineStartTime) / 1000) + " seconds left", width / 2 + 50, height / 2);
+      text((30 - (millis() - baselineStartTime) / 1000) + " seconds left", width / 2 + 50, height / 2);
     } else {
-        text("Now, Breathe", width * .5, height * 0.55);
-        // BEGIN DETECTING BREATHING PATTERNS
-        // MAKE AN ICON TO LET USER KNOW TO BREATHE... add a visual stopwatch/timer?
+        text("Now, Breathe", width * .5, height * 0.3);
+        fill(255, 150); // Light blue color with some transparency
+        noStroke(); // Optional border stroke
+        rect(width * 0.25 + 25, height * 0.6, width * 0.5 - 50, height * 0.2);
+        drawInhalationGraph();
+        
+        
+        
     }
 }
 
-void displayHRGraph(){
-    //fill(0);
-    //text("Heart Rate", 10, 60);
-    //stroke(255, 0, 0);
-    //noFill();
-    //beginShape();
-    //for (int i = 0; i < 220; i++) {
-    //  float y = map(heartBuffer.get(i), 0, 1023, height, 100);
-    //  vertex(i, y);
-    //}
-    //endShape();
+void drawBreathingGuide() {
+    pushMatrix();
+    translate(width / 2, height / 2);
+
+    // Change the circle size based on inhalation/exhalation duration
+    if (isInhale) {
+        // Inhale: Grow the circle
+        circleSize = map(millis() - inhaleStartTime, 0, inhalePeriod * 1000, 50, 200);
+    } else {
+        // Exhale: Shrink the circle
+        circleSize = map(millis() - exhaleStartTime, 0, exhalePeriod * 1000, 200, 50);
+    }
+
+    // Draw the breathing circle
+    fill(100, 200, 255, 150); // Light blue
+    ellipse(0, 0, circleSize, circleSize); // Centered circle that grows/shrinks
+
+    popMatrix();
+}
+
+// Check if the breathing pattern matches the 1:3 ratio of inhale to exhale
+void checkBreathingPattern() {
+    if (exhalePeriod > 0) {
+        // Check if inhalePeriod is approximately one-third of exhalePeriod
+        if (inhalePeriod > (exhalePeriod / 3.0) * 1.2 || inhalePeriod < (exhalePeriod / 3.0) * 0.8) {
+            incorrectBreaths++; // Increment if the pattern doesn't match
+        } else {
+            incorrectBreaths = 0; // Reset if the pattern is correct
+        }
+
+        // If 3 consecutive incorrect breaths are detected, activate the alert
+        if (incorrectBreaths >= 3) {
+            showAlert = true;
+        } else {
+            showAlert = false;
+        }
+    }
 }

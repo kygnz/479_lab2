@@ -62,8 +62,14 @@ void drawLeftPane(){
     //noFill();
     //fill(33, 40, 48);
     rect(0, height * 0.1, width * 0.25, height * 0.9);
+    fill(0);
+    textSize(25);
+    text("Statistics", width * .10, height * 0.15);
     textSize(15);
-    text("Statistics go here", width * .10, height * 0.15);
+    text("Current heart rate: ", width * .15, height * 0.27);
+    
+    text("Time passed: ", width * .15, height * 0.31);
+    
     
 }
 
@@ -144,7 +150,7 @@ void mousePressed() {
     
     // Check if stress detection mode button is pressed
     if (meditationMode != null && meditationMode.isMouseOver()) {
-        println("Stress detection mode selected");
+        println("Meditation mode selected");
         appState = 4;
         fitnessMode.setColor(color(81, 111, 163));
         stressDetection.setColor(color(81, 111, 163));

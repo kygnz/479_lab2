@@ -44,8 +44,22 @@ float restingRespRate = 0;
 int windowSize = 60000;
 FloatList breathTimes = new FloatList();
 
+int inhaleStartTime = 0;
+int exhaleStartTime = 0;
+float inhalePeriod = 0;
+float exhalePeriod = 0;
+FloatList inhalePeriods = new FloatList();  // List to store inhalation times
+FloatList exhalePeriods = new FloatList();  // List to store exhalation times
+int maxBreathsStored = 10;
 
+// MEDITATION VARIABLES
+boolean inMeditationMode = false;
+float circleSize = 50;
+int incorrectBreaths = 0;
+boolean breathingPatternCorrect = true;
+boolean showAlert = false;
 
+// HR VARIABLES
 FloatList baselineData = new FloatList();
 boolean baselineCollected = false;
 int baselineDuration = 30000; // 30 seconds in milliseconds
@@ -57,6 +71,7 @@ float baselineStartTime;
 float startTime;
 int beat_old = 0;
 float currentHeartRate = 0;
+
 
 
 Serial myPort;
@@ -86,11 +101,11 @@ void draw() {
   
     // COLLECTING 30 SECOND BASELINE DATA
     if (!baselineCollected) {
-        float timeLeft = 10 - (millis() - baselineStartTime) / 1000.0;
+        float timeLeft = 30 - (millis() - baselineStartTime) / 1000.0;
         text("Collecting baseline... " + nf(timeLeft, 0, 2) + " seconds left", width / 2, height / 2);
 
         // If 30 seconds have passed, calculate the threshold
-        if (millis() - baselineStartTime >= 10000) {
+        if (millis() - baselineStartTime >= 30000) {
             calculateThreshold();
             baselineCollected = true;
             restingRespRate = calculateRestingRespRate();
@@ -101,10 +116,27 @@ void draw() {
         }
     } else {
         startTime = millis();
-        fill(0);
-        text("Resting Respiratory Rate: " + nf(restingRespRate, 0, 2) + " breaths/min", width / 2, height / 2 + 50);
-        text("Current Heart Rate: " + nf(currentHeartRate, 0, 2) + " BPM", width / 2, height / 2);
+        //fill(0);
+        text("Resting respiratory rate: " + nf(restingRespRate, 0, 2) +  " bpm", width * .15, height * 0.29);
+        //text("Resting Respiratory Rate: " + nf(restingRespRate, 0, 2) + " breaths/min", width / 2, height / 2 + 50);
+        //text("Current Heart Rate: " + nf(currentHeartRate, 0, 2) + " BPM", width / 2, height / 2);
+        //drawLeftPane();
+        
+        if (inMeditationMode) {
+          println("----------------------------------");
+          
+        //drawBreathingGuide();  // Display the growing and shrinking circle
+        checkBreathingPattern();  // Continuously check the breathing pattern
+        
+        // Show an alert if the breathing pattern is incorrect for 3 consecutive breaths
+        if (showAlert) {
+            fill(255, 0, 0); // Red indicator
+            textSize(32);
+            text("Adjust Your Breathing!", width / 2, height / 2);
+        }
     }
+        
+   }
     
     
     // SCREEN DISPLAY LOGIC
@@ -294,14 +326,37 @@ void processFSR(float fsrValue) {
     
     if (delta > minPeakAmplitude && !isInhale) {
         // Detect inhale (peak)
+        inhaleStartTime = currentTime;
         isInhale = true;
+        // If exhalation just finished, calculate the exhalation period
+        if (exhaleStartTime > 0) {
+            exhalePeriod = (inhaleStartTime - exhaleStartTime) / 1000.0;  // Exhalation period in seconds
+            exSerialEvent(exhalePeriod, currentTime / 1000.0);
+
+            // Limit the number of stored exhalation periods
+            if (exhalePeriods.size() > maxBreathsStored) {
+                exhalePeriods.remove(0);
+            }
+        }
     } else if (delta < -minPeakAmplitude && isInhale) {
         // Detect exhale (valley) and check if enough time has passed since last breath
         if (currentTime - lastBreathTime > minBreathInterval) {
             // Valid breath detected, store the time of the breath
+            //breathTimes.append(currentTime);
+            int inhaleEndTime = currentTime;
+            //lastBreathTime = currentTime;
+            // Calculate the inhalation period
+            inhalePeriod = (inhaleEndTime - inhaleStartTime) / 1000.0;  // Inhalation period in seconds
+            inSerialEvent(inhalePeriod, currentTime / 1000.0);
+
+            // Mark the start of exhalation
+            exhaleStartTime = inhaleEndTime;
+            isInhale = false;  // Exhalation in progress
+
+            // Store the breath time
             breathTimes.append(currentTime);
             lastBreathTime = currentTime;
-            isInhale = false; // Reset for the next cycle
+            //isInhale = false; // Reset for the next cycle
             
             // Remove old breath times that are outside of the window size (1 minute)
             while (breathTimes.size() > 0 && breathTimes.get(0) < currentTime - windowSize) {
