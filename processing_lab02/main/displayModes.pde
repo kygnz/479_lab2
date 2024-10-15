@@ -16,8 +16,8 @@ void displayFitnessMode(){
       text(int(30 - (millis() - baselineStartTime) / 1000) + " seconds left", width / 2 + 100, height / 2);
     } else {
         drawHRGraph();
-        //drawRespGraph();
-        drawecgGraph();
+        drawRespGraph();
+        //drawecgGraph();
         drawInhalationGraph();
     }
    
