@@ -93,7 +93,7 @@ void setup() {
     baselineStartTime = millis();
     
     graphSetup();
-    respiratoryGraphSetup();
+    ecggraphSetup();
     inhalationGraphSetup();  
     
 }
@@ -181,6 +181,11 @@ void serialEvent(Serial myPort) {
             // ECG DATA PROCESSING
             else if (inputString.startsWith("ECG: ")){
                 float ecgValue = float(trim(inputString.substring(5)));
+                
+                
+                
+                              //ecggraphSerialEvent( ecgValue,  bpmtimePassed);
+
                 float smoothedValue = smoothECG(ecgValue);
                 if (!baselineCollected) {
                     baselineData.append(smoothedValue); // Collect baseline data
@@ -213,9 +218,12 @@ void serialEvent(Serial myPort) {
                 float bpmValue = float(trim(inputString.substring(5)));
                   print("BPM: ");
                     println(bpmValue);
-                    if(bpmValue<120 && bpmValue>65 ){
-                    
-                graphSerialEvent(bpmValue, bpmtimePassed);
+                    if(bpmValue<180 && bpmValue>65 ){
+                        print("BPM: ");
+                    println(bpmValue);
+                    println(bpmValue-30);
+                    currentHeartRate=bpmValue;
+                graphSerialEvent((bpmValue-30), bpmtimePassed);
                     }
 
              
@@ -384,7 +392,7 @@ void processFSR(float fsrValue) {
 
             // Send the respiratory rate and time to the graph function
             //println("Time: " + currentTime + ", Respiratory Rate: " + respiratoryRate);
-            respiratorySerialEvent(respiratoryRate, currentTime / 1000.0); // time in seconds
+            //respiratorySerialEvent(respiratoryRate, currentTime / 1000.0); // time in seconds
         }
     }
     

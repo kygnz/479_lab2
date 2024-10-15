@@ -1,13 +1,8 @@
 //TODO: 
-//- finish meditation mode
-//- accurate HR values
+//- finish meditation mode label
 //- change line colors on HR graph
 //- stress detection
-//- add labels to graphs
-//- display:
-//    - resting HR
-//    - current heart rate
-//    - graph color guide
+//- graph color key
 // innovative application for device
     
 

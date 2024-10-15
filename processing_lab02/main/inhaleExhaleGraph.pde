@@ -29,9 +29,27 @@ void drawInhalationGraph(){
     
       // Define the position and size of the chart to match the middle pane
       float chartX = width * 0.25 + 25;
-      float chartY = height * 0.6;
+      float chartY = height * 0.7;
       float chartWidth = width * 0.5 - 50;
       float chartHeight = height * 0.2;
+      
+      // Add Title
+      textAlign(CENTER, CENTER);
+      textSize(16);
+      text("Inhalation and Exhalation Periods Over Time", chartX + chartWidth / 2, chartY - 20);
+    
+      // Add Y-axis label (Heart Rate)
+      textAlign(CENTER, CENTER);
+      textSize(12);
+      pushMatrix();
+      translate(chartX - 55, chartY + chartHeight / 2);
+      rotate(-PI / 2);
+      text("Duration", 0, 0); // Y-axis label
+      popMatrix();
+      
+      
+      textSize(12);
+      text("Time (seconds)", chartX + chartWidth / 2, chartY + chartHeight - 30);
     
       //fill(172, 210, 237, 150); // Light blue color with some transparency
       //noStroke(); // Optional border stroke
@@ -94,7 +112,7 @@ void drawInhalationGraph(){
         textSize(14);
         fill(0);
         fill(120);
-        text("Elapsed Time: " + elapsedTime + " sec", chartX + chartWidth / 2, chartY + chartHeight + 20);
+        text("Elapsed Time: " + bpmtimePassed + " sec", (chartX + chartWidth / 2)+205, chartY + chartHeight-20);
 
     
     popMatrix();

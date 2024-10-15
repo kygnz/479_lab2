@@ -1,14 +1,14 @@
 XYChart heartRateChart;
 
 float maxHeartRate;
-FloatList timeX;
+FloatList ecgtimex;
 FloatList heartRateY;
 
 
 void graphSetup(){
   
     heartRateChart = new XYChart(this);
-    timeX = new FloatList();
+    ecgtimex = new FloatList();
     heartRateY = new FloatList();
     
     heartRateChart.setMinY(40);
@@ -47,8 +47,11 @@ void displayTimeInfo() {
     fill(0); // Black text
      // RIGHT PANE DATA
     textAlign(LEFT, TOP);
+     textSize(20);
     text("Exercise zone:", rightPaneX+5, paneHeight  * 0.15);
+    
     fill(169, 169, 169);
+    textSize(16);
     text(lightTimeStr, rightPaneX +5, paneHeight * 0.20);
     fill(0, 191, 255);  // Light (Blue)
     text(fatBurnTimeStr, rightPaneX+5, paneHeight  * 0.25);
@@ -72,13 +75,29 @@ void drawHRGraph(){
     
       // Define the position and size of the chart to match the middle pane
       float chartX = width * 0.25 + 25;
-      float chartY = height * 0.1 + 20;
+      float chartY = height * 0.15 + 20;
       float chartWidth = width * 0.5 - 50;
       float chartHeight = height * 0.2;
     
       // Draw the chart background
       //fill(238, 240, 242);
       //rect(chartX, chartY, chartWidth, chartHeight);
+      // Add Title
+      textAlign(CENTER, CENTER);
+      textSize(15);
+      text("Heart Rate Over Time", chartX + chartWidth / 2, chartY - 20);
+      
+      // Add Y-axis label (Heart Rate)
+      textAlign(CENTER, CENTER);
+      textSize(12);
+      pushMatrix();
+      translate(chartX - 55, chartY + chartHeight / 2);
+      rotate(-PI / 2);
+      text("Heart Rate (bpm)", 0, 0); // Y-axis label
+      popMatrix();
+      
+      textSize(12);
+      text("Time (seconds)", chartX + chartWidth / 2, chartY + chartHeight - 30); // X-axis label
       
       // Draw axes
       stroke(33, 40, 48);
@@ -116,10 +135,10 @@ void drawHRGraph(){
         // Draw the data points and lines.
         noFill();
         strokeWeight(2);
-        for (int i = 1; i < timeX.size(); i++) {
-        float x1 = map(timeX.get(i - 1), timeX.get(0), timeX.get(timeX.size() - 1), chartX + 40, chartX + chartWidth - 20);
+        for (int i = 1; i < ecgtimex.size(); i++) {
+        float x1 = map(ecgtimex.get(i - 1), ecgtimex.get(0), ecgtimex.get(ecgtimex.size() - 1), chartX + 40, chartX + chartWidth - 20);
         float y1 = map(heartRateY.get(i - 1), minY, maxY, chartY + chartHeight - 40, chartY);
-        float x2 = map(timeX.get(i), timeX.get(0), timeX.get(timeX.size() - 1), chartX + 40, chartX + chartWidth - 20);
+        float x2 = map(ecgtimex.get(i), ecgtimex.get(0), ecgtimex.get(ecgtimex.size() - 1), chartX + 40, chartX + chartWidth - 20);
         float y2 = map(heartRateY.get(i), minY, maxY, chartY + chartHeight - 40, chartY);
 
         // Draw the line between points.
@@ -132,15 +151,15 @@ void drawHRGraph(){
         textSize(14);
         fill(0);
         fill(120);
-        text("Elapsed Time: " + elapsedTime + " sec", chartX + chartWidth / 2, chartY + chartHeight + 20);
+        text("Elapsed Time: " + bpmtimePassed + " sec", chartX + chartWidth / 2+250, chartY + chartHeight-10 );
         
       
       
       // Draw the data points and colored lines
-    //for (int i = 1; i < timeX.size(); i++) {
-    //    float x1 = map(timeX.get(i-1), timeX.get(0), timeX.get(timeX.size()-1), 40, chartWidth - 20);
+    //for (int i = 1; i < ecgtimex.size(); i++) {
+    //    float x1 = map(ecgtimex.get(i-1), ecgtimex.get(0), ecgtimex.get(ecgtimex.size()-1), 40, chartWidth - 20);
     //    float y1 = map(heartRateY.get(i-1), minY, maxY, 250, 0);  // Map Y-axis values with minY = 40
-    //    float x2 = map(timeX.get(i), timeX.get(0), timeX.get(timeX.size()-1), 40, chartWidth - 20);
+    //    float x2 = map(ecgtimex.get(i), ecgtimex.get(0), ecgtimex.get(ecgtimex.size()-1), 40, chartWidth - 20);
     //    float y2 = map(heartRateY.get(i), minY, maxY, 250, 0);  // Map Y-axis values with minY = 40
         
     //    // Calculate heart rate percentage
@@ -171,11 +190,11 @@ void drawHRGraph(){
 void graphSerialEvent(float heartrate, float timePassed){
     //println("you reached the graphing part!\n");
      heartRateY.append(heartrate);
-     timeX.append(timePassed);
+     ecgtimex.append(timePassed);
     
     // Ensure the graph only displays the most recent 100 data points
-    if (timeX.size() > 100 && heartRateY.size() > 100) {
-        timeX.remove(0);
+    if (ecgtimex.size() > 100 && heartRateY.size() > 100) {
+        ecgtimex.remove(0);
         heartRateY.remove(0);
     }
     
@@ -185,7 +204,7 @@ void graphSerialEvent(float heartrate, float timePassed){
     //println("heartRatePercent: "+heartRatePercent);
     
     //// Calculate the time spent in the current zone (assuming timePassed is in seconds)
-    //float deltaTime = (timeX.size() > 1) ? timeX.get(timeX.size() - 1) - timeX.get(timeX.size() - 2) : 0;
+    //float deltaTime = (ecgtimex.size() > 1) ? ecgtimex.get(ecgtimex.size() - 1) - ecgtimex.get(ecgtimex.size() - 2) : 0;
     //totalTime += deltaTime;
     
     //// Update time spent in each cardio zone
@@ -202,7 +221,7 @@ void graphSerialEvent(float heartrate, float timePassed){
     //}
     
     // Update the chart with new data
-    heartRateChart.setData(timeX.array(), heartRateY.array());
+    heartRateChart.setData(ecgtimex.array(), heartRateY.array());
   
   
   

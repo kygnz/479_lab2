@@ -86,14 +86,21 @@ void drawLeftPane(){
     //image(bg, 0, height * 0.05, width * 0.25, height * 0.9);
     //noFill();
     //fill(33, 40, 48);
-    rect(0, height * 0.1, width * 0.25, height * 0.9);
+    rect(0, height * 0.1, width * 0.2, height * 0.9);
     fill(0);
-    textSize(25);
-    text("Statistics", width * .10, height * 0.15);
+    textSize(20);
+    textAlign(LEFT, TOP);
+    text("Statistics", width * .01, height * 0.14);
     textSize(15);
-    text("Current heart rate: ", width * .15, height * 0.27);
+    if(baselineCollected){
+        text("Current heart rate: " + currentHeartRate +"bpm", width * .01, height * 0.18);
+        text("Resting heart rate: 75bpm", width * .01, height * 0.20);
+        text("Resting respiratory rate: " + restingRespRate, width * .01, height * 0.22);
+        text("Time passed: " + bpmtimePassed+"sec", width * .01, height * 0.24);
+    }
+    //text("Current heart rate: ", width * .15, height * 0.27);
     
-    text("Time passed: ", width * .15, height * 0.31);
+    //text("Time passed: ", width * .15, height * 0.31);
     
     
 }
@@ -105,8 +112,8 @@ void drawMiddlePane(){
   rect(width * 0.25, height * 0.1, width * 0.5, height * 0.8);
   
   fill(33, 40, 48);
-  textSize(15);
-  text("Select a mode to get started", width * .5, height * 0.15);
+  textSize(25);
+  text("Select a mode to get started", width * .5, height * 0.35);
 }
 
 
@@ -125,7 +132,7 @@ void drawRightPane(){
 
 void drawButtonArea(){
     fill(225, 225, 225);
-    rect(width * 0.25, height * 0.9, width * 0.5, height * 0.1);
+    rect(width * 0.2, height * 0.9, width * 0.55, height * 0.1);
     fill(33, 40, 48);
     //textSize(15);
     //text("Buttons to change the mode go here", width * .5, height * 0.95);

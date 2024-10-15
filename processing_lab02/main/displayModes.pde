@@ -1,20 +1,23 @@
 void displayFitnessMode(){
+  background(238, 240, 242); // Clear the previous elements
+    drawMainScreen(); // Common elements in all modes
     fill(238, 240, 242);
     //stroke(216, 216, 216);
     noStroke(); // No outline
     rect(width * 0.25, height * 0.1, width * 0.5, height * 0.8);
     
     fill(33, 40, 48);
-    textSize(15);
-    text("Fitness Mode Graphs", width * .5, height * 0.15);
+    textSize(20);
+    text("Fitness Mode Graphs", width * .5, height * 0.10);
     
     if (!baselineCollected) {
       fill(100);
       text("Collecting baseline... ", width / 2 - 50, height / 2);
-      text((30 - (millis() - baselineStartTime) / 1000) + " seconds left", width / 2 + 100, height / 2);
+      text(int(30 - (millis() - baselineStartTime) / 1000) + " seconds left", width / 2 + 100, height / 2);
     } else {
         drawHRGraph();
-        drawRespGraph();
+        //drawRespGraph();
+        drawecgGraph();
         drawInhalationGraph();
     }
     
@@ -22,6 +25,8 @@ void displayFitnessMode(){
 }
 
 void displayStressDetection(){
+    background(238, 240, 242); // Clear the previous elements
+    drawMainScreen(); // Common elements in all modes
     fill(238, 240, 242);
     rect(width * 0.25, height * 0.1, width * 0.5, height * 0.8);
     
@@ -39,13 +44,15 @@ void displayStressDetection(){
 }
 
 void displayMeditationMode(){
+    background(238, 240, 242); // Clear the previous elements
+    drawMainScreen(); // Common elements in all modes
     inMeditationMode  = true;
     fill(238, 240, 242);
     
     image(meditatebg, width * 0.25, height * 0.1, width * 0.5, height * 0.8);
-    noFill();
-    noStroke(); // No outline
-    rect(width * 0.25, height * 0.1, width * 0.5, height * 0.8);
+    //noFill();
+    //noStroke(); // No outline
+    //rect(width * 0.25, height * 0.1, width * 0.5, height * 0.8);
     
     fill(240);
     textSize(35);
@@ -56,9 +63,9 @@ void displayMeditationMode(){
       text((30 - (millis() - baselineStartTime) / 1000) + " seconds left", width / 2 + 50, height / 2);
     } else {
         text("Now, Breathe", width * .5, height * 0.3);
-        fill(255, 150); // Light blue color with some transparency
-        noStroke(); // Optional border stroke
-        rect(width * 0.25 + 25, height * 0.6, width * 0.5 - 50, height * 0.2);
+        fill(255, 150); 
+        noStroke();
+        rect(width * 0.25 + 25, height * 0.65 + 25, width * 0.5 - 50, height * 0.3);
         drawInhalationGraph();
         
         
@@ -66,25 +73,25 @@ void displayMeditationMode(){
     }
 }
 
-void drawBreathingGuide() {
-    pushMatrix();
-    translate(width / 2, height / 2);
+//void drawBreathingGuide() {
+//    pushMatrix();
+//    translate(width / 2, height / 2);
 
-    // Change the circle size based on inhalation/exhalation duration
-    if (isInhale) {
-        // Inhale: Grow the circle
-        circleSize = map(millis() - inhaleStartTime, 0, inhalePeriod * 1000, 50, 200);
-    } else {
-        // Exhale: Shrink the circle
-        circleSize = map(millis() - exhaleStartTime, 0, exhalePeriod * 1000, 200, 50);
-    }
+//    // Change the circle size based on inhalation/exhalation duration
+//    if (isInhale) {
+//        // Inhale: Grow the circle
+//        circleSize = map(millis() - inhaleStartTime, 0, inhalePeriod * 1000, 50, 200);
+//    } else {
+//        // Exhale: Shrink the circle
+//        circleSize = map(millis() - exhaleStartTime, 0, exhalePeriod * 1000, 200, 50);
+//    }
 
-    // Draw the breathing circle
-    fill(100, 200, 255, 150); // Light blue
-    ellipse(0, 0, circleSize, circleSize); // Centered circle that grows/shrinks
+//    // Draw the breathing circle
+//    fill(100, 200, 255, 150); // Light blue
+//    ellipse(0, 0, circleSize, circleSize); // Centered circle that grows/shrinks
 
-    popMatrix();
-}
+//    popMatrix();
+//}
 
 // Check if the breathing pattern matches the 1:3 ratio of inhale to exhale
 void checkBreathingPattern() {
