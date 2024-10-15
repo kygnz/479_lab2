@@ -181,11 +181,11 @@ void serialEvent(Serial myPort) {
             // ECG DATA PROCESSING
             else if (inputString.startsWith("ECG: ")){
                 float ecgValue = float(trim(inputString.substring(5)));
-                
-                
-                
-                              //ecggraphSerialEvent( ecgValue,  bpmtimePassed);
-
+             //   if(ecgValue>=200 && ecgValue<=800){
+             //    print("ECG: ");
+             //   println(ecgValue);
+             ////ecggraphSerialEvent( ecgValue,  bpmtimePassed);
+             //   }
                 float smoothedValue = smoothECG(ecgValue);
                 if (!baselineCollected) {
                     baselineData.append(smoothedValue); // Collect baseline data
